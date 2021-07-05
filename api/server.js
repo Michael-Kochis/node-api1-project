@@ -34,8 +34,8 @@ server.get('/api/users/:id', (req, res) => {
 
     db.findById(id)
         .then((resp) => {
-            if (resp === null) {
-                res.status(404).json({message: "Record with that ID not found"});
+            if (resp === undefined) {
+                res.status(404).json({message: "/does not exist/"});
             } else { 
                 res.status(200).json(resp);
             }
@@ -52,7 +52,7 @@ server.post('/api/users', (req, res) => {
 
     item.id = id;
     if (!item.name || !item.bio) {
-        res.status(400).json({message: "Posting user requires both name and bio"})
+        res.status(400).json({message: "/provide name and bio/"});
     } else {
         db.insert(item)
             .then(() => {
@@ -74,7 +74,11 @@ server.put('/api/users/:id', (req, res) => {
     } else {
         db.update(id, changes)
         .then((resp) => {
-            res.status(201).json(resp);
+            if (resp === undefined || resp === null) {
+                res.status(404).json({message: "/does not exist/"});
+            } else { 
+                res.status(201).json(resp);
+            }
         }).catch((err) => {
             console.log(err);
             res.status(500).json({ message: "The user information could not be modified" }); 
